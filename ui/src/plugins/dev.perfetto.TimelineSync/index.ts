@@ -18,9 +18,7 @@ import {PerfettoPlugin} from '../../public/plugin';
 import {Time, TimeSpan} from '../../base/time';
 import {redrawModal, showModal} from '../../widgets/modal';
 import {assertExists} from '../../base/logging';
-import { showStatusbar, closeStatusbar } from '../../widgets/bottom_statusbar';
-import { createSyncStatusbarVnode, SyncStatus } from './timeline_sync_status_bar_content';
-
+import {createSyncStatusbarVnode} from './timeline_sync_status_bar_content';
 
 const PLUGIN_ID = 'dev.perfetto.TimelineSync';
 const DEFAULT_BROADCAST_CHANNEL = `${PLUGIN_ID}#broadcastChannel`;
@@ -248,17 +246,15 @@ export default class implements PerfettoPlugin {
   // Add: Method to update status bar UI
   private _updateStatusbar() {
     if (this.active) {
-      const currentStatus: SyncStatus = 'active';
-      showStatusbar({
+      this._ctx?.statusbar.setStatusbarContent({
         key: STATUSBAR_KEY,
-        content: () => createSyncStatusbarVnode({
-          status: currentStatus,
-          onResume: () => console.log("Not implemented yet"),
-          onStop: () => this.disableTimelineSync(this._sessionId),
-        }),
+        content: () =>
+          createSyncStatusbarVnode({
+            onStop: () => this.disableTimelineSync(this._sessionId),
+          }),
       });
     } else {
-      closeStatusbar(STATUSBAR_KEY);
+      this._ctx?.statusbar.removeStatusbarcontent();
     }
   }
 

@@ -13,84 +13,40 @@
 // limitations under the License.
 
 import m from 'mithril';
-
-export type SyncStatus = 'active' | 'paused';
+import {Button} from '../../widgets/button';
+import {Icon} from '../../widgets/icon';
 
 export interface SyncStatusbarContentAttrs {
-  status: SyncStatus;
   // Callback for Resume button (when status is 'paused')
-  onResume?: () => void;
-  // Callback for Pause button (when status is 'active') - Button hidden if undefined
-  onPause?: () => void;
-  onStop?: () => void;
+  readonly onStop?: () => void;
 }
 
-export class SyncStatusbarContent implements m.ClassComponent<SyncStatusbarContentAttrs> {
+export class SyncStatusbarContent
+  implements m.ClassComponent<SyncStatusbarContentAttrs>
+{
   view(vnode: m.Vnode<SyncStatusbarContentAttrs>): m.Children[] {
-    const {status, onResume, onPause, onStop} = vnode.attrs;
-
-    const isActive = status === 'active';
-
-    const btnBaseClass = '.status-bar-button';
-    const iconClass = '.material-icons';
-
-
-    const pauseResumeButton = () => {
-      // Only show Pause button if active AND onPause callback is provided
-      if (isActive && onPause) {
-        return m(`button${btnBaseClass}`, {
-            onclick: onPause,
-            title: 'Pause Sync',
-          },
-          m(`i${iconClass}`, 'pause'),
-          m('span', 'Pause'),
-        );
-      } else if (!isActive) {
-        // Show Resume button when paused
-        return m(`button${btnBaseClass}`, {
-            onclick: onResume,
-            disabled: !onResume,
-            title: 'Resume Sync',
-          },
-          m(`i${iconClass}`, 'play_arrow'),
-          m('span', 'Resume'),
-        );
-      } else {
-        // Don't show Pause/Resume button when inactive or if onPause is missing when active
-        return null;
-      }
-    };
+    const {onStop} = vnode.attrs;
 
     return [
       // Left group: Description and Status
       m('div', [
-        m('span.status-bar-item-container', [
-          m(`i${iconClass}`, 'sync'),
-          m('span', 'Timeline Sync'),
-        ]),
-        m('span.status-bar-separator'),
-        m('span', `Status: ${status.charAt(0).toUpperCase() + status.slice(1)}`),
+        m('span', [m(Icon, {icon: 'sync'}), m('span', 'Timeline Sync')]),
+        m('span.pf-statusbar__separator'),
+        m('span', `Status: Active`),
       ]),
 
-      // Button group div
-      m('div', [
-        // Render Pause or Resume button based on state and presence of onPause
-        pauseResumeButton(),
-
-        // Stop Button
-        m(`button${btnBaseClass}.text-red-600`, {
-            onclick: onStop,
-            disabled: !isActive, // Can stop if active or paused
-            title: 'Stop Sync',
-          },
-          m(`i${iconClass}`, 'stop_circle'),
-          m('span', 'Stop'),
-        ),
-      ]),
+      m(Button, {
+        onclick: onStop,
+        rightIcon: 'stop_circle',
+        label: 'Stop Sync',
+        className: 'pf-statusbar__button--red',
+      }),
     ];
   }
 }
 
-export function createSyncStatusbarVnode(attrs: SyncStatusbarContentAttrs): m.Vnode<SyncStatusbarContentAttrs> {
+export function createSyncStatusbarVnode(
+  attrs: SyncStatusbarContentAttrs,
+): m.Vnode<SyncStatusbarContentAttrs> {
   return m(SyncStatusbarContent, attrs);
 }
