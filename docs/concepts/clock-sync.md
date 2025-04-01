@@ -235,7 +235,7 @@ The opposite is not allowed, because `CLOCK_REALTIME` timestamps between 2AM
 and 3AM are ambiguous and could be resolved against two different
 `CLOCK_BOOTTIME` timestamps).
 
-[6756fb05]: https://android-review.googlesource.com/c/platform/external/perfetto/+/1101915/
+[6756fb05]: https://r.android.com/1101915
 [clock_snapshot]: https://android.googlesource.com/platform/external/perfetto/+/refs/heads/main/protos/perfetto/trace/clock_snapshot.proto
 [timestamp_clock_id]: https://android.googlesource.com/platform/external/perfetto/+/3e7ca4f5893f7d762ec24a2eac9a47343b226c6c/protos/perfetto/trace/trace_packet.proto#68
 [builtin_clocks]: https://android.googlesource.com/platform/external/perfetto/+/3e7ca4f5893f7d762ec24a2eac9a47343b226c6c/protos/perfetto/trace/clock_snapshot.proto#25
