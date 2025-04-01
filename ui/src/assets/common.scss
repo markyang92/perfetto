@@ -105,7 +105,7 @@ body > main {
     "sidebar alerts"
     "sidebar page"
     "statusbar statusbar";
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto auto 1fr auto;
   grid-template-columns: auto 1fr;
   color: #121212;
   overflow: hidden;

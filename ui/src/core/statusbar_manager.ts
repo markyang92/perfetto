@@ -13,39 +13,32 @@
 // limitations under the License.
 
 import m from 'mithril';
-import {StatusbarAttrs} from '../frontend/bottom_statusbar';
+import {Intent} from '../widgets/common';
 
 /**
  * Manages the state for a simple status bar that can display one piece of content at a time.
  *
  * At least for now, this is not meant to be used by several plugins at the same time.
  */
+
+export interface StatusBarItem {
+  readonly renderItem: () => {
+    readonly label: string;
+    readonly icon?: string;
+    readonly intent?: Intent;
+    readonly onclick?: (event: MouseEvent) => void;
+  };
+  readonly popupContent?: () => m.Children;
+}
+
 export class StatusBarManager {
-  private currentStatusbar: StatusbarAttrs | undefined = undefined;
+  private _statusBarItems: StatusBarItem[] = [];
 
-  /**
-   * Sets or updates the content displayed in the status bar.
-   * Replaces any existing content.
-   * @param userAttr Attributes defining the content and optional key.
-   */
-  setStatusbarContent(userAttr: StatusbarAttrs): void {
-    this.currentStatusbar = userAttr;
-    m.redraw();
+  registerItem(item: StatusBarItem) {
+    this._statusBarItems.push(item);
   }
 
-  /**
-   * Removes the current content from the status bar, effectively hiding it.
-   */
-  removeStatusbarcontent(): void {
-    this.currentStatusbar = undefined;
-    m.redraw();
-  }
-
-  /**
-   * Gets the attributes of the content currently displayed in the status bar.
-   * @returns The StatusbarAttrs object if content is shown, otherwise undefined.
-   */
-  getStatusbarContent(): StatusbarAttrs | undefined {
-    return this.currentStatusbar;
+  get statusBarItems(): ReadonlyArray<StatusBarItem> {
+    return this._statusBarItems;
   }
 }

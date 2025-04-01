@@ -80,7 +80,6 @@ export class TraceContext implements Disposable {
   readonly scrollHelper: ScrollHelper;
   readonly trash = new DisposableStack();
   readonly onTraceReady = new EvtSource<void>();
-
   readonly statusbarMgr = new StatusBarManager();
 
   // List of errors that were encountered while loading the trace by the TS

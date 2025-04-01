@@ -24,17 +24,15 @@ export interface SyncStatusbarContentAttrs {
 export class SyncStatusbarContent
   implements m.ClassComponent<SyncStatusbarContentAttrs>
 {
-  view(vnode: m.Vnode<SyncStatusbarContentAttrs>): m.Children[] {
+  view(vnode: m.Vnode<SyncStatusbarContentAttrs>): m.Children {
     const {onStop} = vnode.attrs;
 
     return [
-      // Left group: Description and Status
-      m('div', [
+      m('span', [
         m('span', [m(Icon, {icon: 'sync'}), m('span', 'Timeline Sync')]),
         m('span.pf-statusbar__separator'),
         m('span', `Status: Active`),
       ]),
-
       m(Button, {
         onclick: onStop,
         rightIcon: 'stop_circle',
@@ -43,10 +41,4 @@ export class SyncStatusbarContent
       }),
     ];
   }
-}
-
-export function createSyncStatusbarVnode(
-  attrs: SyncStatusbarContentAttrs,
-): m.Vnode<SyncStatusbarContentAttrs> {
-  return m(SyncStatusbarContent, attrs);
 }

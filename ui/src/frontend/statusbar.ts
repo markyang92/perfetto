@@ -14,6 +14,8 @@
 
 import m from 'mithril';
 import {Trace} from '../public/trace';
+import {Button, ButtonVariant} from '../widgets/button';
+import {Popup, PopupPosition} from '../widgets/popup';
 
 /**
  * Attributes for the StatusBar component.
@@ -24,7 +26,7 @@ export interface StatusbarAttrs {
   key?: string;
   // Content to be displayed within the status bar.
   // Can be direct Mithril children or a function returning children.
-  content?: m.Children | (() => m.Children);
+  content?: () => m.Children;
 }
 
 /**
@@ -41,23 +43,31 @@ export class StatusBar implements m.ClassComponent<StatusbarAttrs> {
  * Renders the current status bar component if one is active.
  * @returns An array containing the StatusBar Vnode if active, otherwise empty.
  */
-export function maybeRenderStatusbar(
-  trace: Trace | undefined,
-): m.Vnode<StatusbarAttrs>[] {
-  const currentStatusbar = trace?.statusbar.getStatusbarContent();
-  if (currentStatusbar === undefined) {
-    console.log('null statusbar');
-    return [];
-  }
-
-  let children: m.Children;
-  if (currentStatusbar.content === undefined) {
-    children = null;
-  } else if (typeof currentStatusbar.content === 'function') {
-    children = currentStatusbar.content();
-  } else {
-    children = currentStatusbar.content;
-  }
-
-  return [m(StatusBar, currentStatusbar, children)];
+export function renderStatusBar(trace: Trace | undefined): m.Children {
+  return m(
+    StatusBar,
+    trace?.statusbar.statusBarItems.map((item) => {
+      const {icon, label, intent, onclick} = item.renderItem();
+      const popupContent = item.popupContent?.();
+      const itemContent = m(Button, {
+        label,
+        icon,
+        intent,
+        onclick,
+        variant: ButtonVariant.Filled,
+      });
+      if (Boolean(popupContent)) {
+        return m(
+          Popup,
+          {
+            position: PopupPosition.Top,
+            trigger: itemContent,
+          },
+          popupContent,
+        );
+      } else {
+        return itemContent;
+      }
+    }),
+  );
 }
