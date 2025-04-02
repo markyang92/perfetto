@@ -892,7 +892,6 @@ export class UiMainPerTrace implements m.ClassComponent {
         ),
         m('br'),
       ),
-      buttons: [],
     });
   }
 }
