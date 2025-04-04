@@ -32,7 +32,8 @@ import {TextInput} from '../../widgets/text_input';
 import {Popup} from '../../widgets/popup';
 import {TrackNode, Workspace} from '../../public/workspace';
 import {AreaSelection, Selection} from '../../public/selection';
-import {Multiselect2} from '../../widgets/multiselect2';
+import {MultiselectInput} from '../../widgets/multiselect_input';
+import {Intent} from '../../widgets/common';
 
 const FLAG_WIDTH = 16;
 const AREA_TRIANGLE_WIDTH = 10;
@@ -262,7 +263,7 @@ export class NotesPanel {
           return m(
             '.pf-track-filter__row',
             m('label', 'Filter by ', filter.name),
-            m(Multiselect2, {
+            m(MultiselectInput, {
               options: options,
               selectedOptions: selectedKeys,
               onOptionAdd: (o) => {
@@ -296,6 +297,7 @@ export class NotesPanel {
           type: 'reset',
           label: 'Clear All Filters',
           icon: 'filter_alt_off',
+          intent: Intent.Danger,
           onclick: () => {
             trackFilters.clearAll();
           },

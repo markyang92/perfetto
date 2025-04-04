@@ -31,7 +31,7 @@ export interface Option {
   readonly label: string;
 }
 
-export interface Multiselect2Attrs extends HTMLAttrs {
+export interface MultiselectInputAttrs extends HTMLAttrs {
   readonly options: ReadonlyArray<Option>;
   readonly selectedOptions: ReadonlyArray<string>;
   readonly onOptionAdd: (key: string) => void;
@@ -41,12 +41,13 @@ export interface Multiselect2Attrs extends HTMLAttrs {
 
 const INPUT_REF = 'input';
 
-export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
+export class MultiselectInput
+  implements m.ClassComponent<MultiselectInputAttrs>
+{
   private currentTextValue = '';
-  private popupShowing = false;
   private selectedItemIndex = 0;
 
-  view({attrs}: m.CVnode<Multiselect2Attrs>) {
+  view({attrs}: m.CVnode<MultiselectInputAttrs>) {
     const {
       selectedOptions,
       placeholder,
@@ -59,15 +60,11 @@ export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
     return m(
       Popup,
       {
-        className: 'pf-multiselect2__popup',
+        className: 'pf-multiselect-input__popup',
         position: PopupPosition.Bottom,
-        // isOpen: this.popupShowing,
-        onChange: (shouldOpen) => {
-          this.popupShowing = shouldOpen;
-        },
         matchWidth: true,
         trigger: m(
-          '.pf-multiselect2',
+          '.pf-multiselect-input',
           {
             onclick: (ev: Event) => {
               const target = ev.currentTarget as HTMLElement;
@@ -84,7 +81,6 @@ export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
             if (option) {
               return renderTag({
                 label: option.label,
-                onChange: () => {},
                 onRemove: () => attrs.onOptionRemove(option.key),
               });
             } else {
@@ -93,12 +89,9 @@ export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
           }),
           m('input', {
             ref: INPUT_REF,
-            onfocus: () => (this.popupShowing = true),
             value: this.currentTextValue,
             placeholder,
             oninput: (ev: InputEvent) => {
-              // If we're typing we wanna make sure the popup appears
-              this.popupShowing = true;
               const el = ev.target as HTMLInputElement;
               this.currentTextValue = el.value;
               this.selectedItemIndex = 0;
@@ -149,16 +142,7 @@ export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
     );
   }
 
-  onupdate({dom}: m.VnodeDOM<Multiselect2Attrs>) {
-    if (!this.popupShowing) {
-      const inputElement = findRef(dom, INPUT_REF);
-      if (inputElement) {
-        (inputElement as HTMLInputElement).blur();
-      }
-    }
-  }
-
-  private renderOptions(attrs: Multiselect2Attrs) {
+  private renderOptions(attrs: MultiselectInputAttrs) {
     const {onOptionAdd, onOptionRemove, selectedOptions} = attrs;
     const filtered = this.filterOptions(attrs);
 
@@ -167,16 +151,16 @@ export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
     }
 
     return m(
-      '.pf-multiselect2__scroller',
+      '.pf-multiselect-input__scroller',
       filtered.map((o, index) => {
         const alreadyAdded = selectedOptions.includes(o.key);
         return m(
-          '.pf-multiselect2__option-row',
+          '.pf-multiselect-input__option-row',
           {
             key: o.key,
             className: classNames(
               this.selectedItemIndex === index &&
-                'pf-multiselect2__option-row--selected',
+                'pf-multiselect-input__option-row--selected',
             ),
             onclick: () => {
               if (alreadyAdded) {
@@ -193,7 +177,7 @@ export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
     );
   }
 
-  private filterOptions({options}: Multiselect2Attrs) {
+  private filterOptions({options}: MultiselectInputAttrs) {
     return options.filter((o) => {
       return o.label
         .toLowerCase()
@@ -204,21 +188,12 @@ export class Multiselect2 implements m.ClassComponent<Multiselect2Attrs> {
 
 interface TagAttrs {
   readonly label: string;
-  readonly onChange?: (value: string) => void;
   readonly onRemove?: () => void;
 }
 
-function renderTag({label, onChange, onRemove}: TagAttrs): m.Children {
+function renderTag({label, onRemove}: TagAttrs): m.Children {
   return m(
-    'span.pf-multiselect2__tag',
-    {
-      ondblclick: onChange
-        ? () => {
-            onChange(label);
-            onRemove?.();
-          }
-        : undefined,
-    },
+    'span.pf-multiselect-input__tag',
     label,
     m(Icon, {
       icon: 'close',

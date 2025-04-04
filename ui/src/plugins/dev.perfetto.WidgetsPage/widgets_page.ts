@@ -61,7 +61,7 @@ import {VirtualOverlayCanvas} from '../../widgets/virtual_overlay_canvas';
 import {SplitPanel} from '../../widgets/split_panel';
 import {TabbedSplitPanel} from '../../widgets/tabbed_split_panel';
 import {parseAndPrintTree} from '../../base/perfetto_sql_lang/language';
-import {Multiselect2} from '../../widgets/multiselect2';
+import {MultiselectInput} from '../../widgets/multiselect_input';
 
 const DATA_ENGLISH_LETTER_FREQUENCY = {
   table: [
@@ -925,6 +925,13 @@ export class WidgetsPage implements m.ClassComponent<PageAttrs> {
         },
       }),
       m(WidgetShowcase, {
+        label: 'MultiselectInput',
+        description: `Tag input with options`,
+        renderWidget: () => {
+          return m(MultiselectInputDemo);
+        },
+      }),
+      m(WidgetShowcase, {
         label: 'Menu',
         renderWidget: () =>
           m(
@@ -1537,18 +1544,11 @@ export class WidgetsPage implements m.ClassComponent<PageAttrs> {
           showCloseButtons: true,
         },
       }),
-      m(WidgetShowcase, {
-        label: 'Multiselect2',
-        description: `Tag input with options`,
-        renderWidget: () => {
-          return m(Multiselect2Demo);
-        },
-      }),
     );
   }
 }
 
-function Multiselect2Demo() {
+function MultiselectInputDemo() {
   const options = [
     'foo',
     'bar',
@@ -1564,7 +1564,7 @@ function Multiselect2Demo() {
   let selectedOptions: string[] = [];
   return {
     view() {
-      return m(Multiselect2, {
+      return m(MultiselectInput, {
         options: options.map((o) => ({key: o, label: o})),
         selectedOptions,
         onOptionAdd: (key) => selectedOptions.push(key),
