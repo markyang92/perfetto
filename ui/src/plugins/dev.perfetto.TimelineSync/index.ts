@@ -88,7 +88,7 @@ export default class implements PerfettoPlugin {
     ctx.statusbar.registerItem({
       renderItem: () => {
         return {
-          label: `Timeline Sync ${this.active ? 'ON' : 'OFF'}`,
+          label: `Timeline Sync`,
           icon: 'sync',
           intent: this.active ? Intent.Success : Intent.None,
           onclick: this.active
@@ -100,14 +100,9 @@ export default class implements PerfettoPlugin {
         return this.active
           ? m(
               '.pf-tline-sync-popup',
-              m('.pf-tline-sync-popup__status', `Syncing with tab <foo>`),
+              `Timeline Sync Active`,
               m(
                 ButtonBar,
-                m(Button, {
-                  label: 'Change Target',
-                  variant: ButtonVariant.Filled,
-                  dismissPopup: true,
-                }),
                 m(Button, {
                   label: 'Stop',
                   icon: 'stop_circle',

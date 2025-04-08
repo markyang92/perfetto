@@ -18,34 +18,11 @@ import {Button, ButtonVariant} from '../widgets/button';
 import {Popup, PopupPosition} from '../widgets/popup';
 
 /**
- * Attributes for the StatusBar component.
- */
-export interface StatusbarAttrs {
-  // Unique key to identify this specific status bar instance,
-  // useful for closing the correct one if multiple are shown in sequence.
-  key?: string;
-  // Content to be displayed within the status bar.
-  // Can be direct Mithril children or a function returning children.
-  content?: () => m.Children;
-}
-
-/**
  * A persistent status bar component typically rendered at the bottom of the UI.
- * It replaces the previous status bar content when shown.
- */
-export class StatusBar implements m.ClassComponent<StatusbarAttrs> {
-  view(vnode: m.Vnode<StatusbarAttrs>) {
-    return m('.pf-statusbar', vnode.children);
-  }
-}
-
-/**
- * Renders the current status bar component if one is active.
- * @returns An array containing the StatusBar Vnode if active, otherwise empty.
  */
 export function renderStatusBar(trace: Trace | undefined): m.Children {
   return m(
-    StatusBar,
+    '.pf-statusbar',
     trace?.statusbar.statusBarItems.map((item) => {
       const {icon, label, intent, onclick} = item.renderItem();
       const popupContent = item.popupContent?.();
