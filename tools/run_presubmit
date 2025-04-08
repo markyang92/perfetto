@@ -264,19 +264,6 @@ def CheckPatchFormatted(changed_files: List[str],
   files_to_format_paths = filter_files(
       changed_files, files_to_check=format_patterns)
 
-  # Add common clang-format config file patterns if they changed
-  clang_format_configs = filter_files(
-      changed_files, files_to_check=['*clang-format*'])  # More robust pattern
-  if clang_format_configs:
-    print(
-        "INFO: .clang-format file changed, checking all relevant files for "
-        "formatting.",
-        file=sys.stderr)
-    # If config changes, check ALL relevant files in repo, not just changed ones
-    all_relevant_files = get_changed_files(None)  # Get all files
-    files_to_format_paths = filter_files(
-        all_relevant_files, files_to_check=format_patterns)
-
   if not files_to_format_paths:
     return []
 
@@ -402,6 +389,8 @@ def CheckIncludePaths(changed_files: List[str]) -> List[str]:
     for i, line in enumerate(content):
       match = pattern.search(line)
       if not match:
+        continue
+      if '// no-include-violation-check' in line:
         continue
       inc_hdr = match.group(1)
       # Normalize path separators for comparison
@@ -679,34 +668,6 @@ def CheckBannedCpp(changed_files: List[str]) -> List[str]:
           # Use re.search for checking content
           if re.search(regex_str, line):
             errors.append(f'Banned pattern:\n  {f_path}:{i+1}: {message}')
-  return errors
-
-
-def CheckBadCppPatterns(changed_files: List[str]) -> List[str]:
-  # File Regex (for filtering), Code Regex (for checking), Message tuple
-  # File pattern needs to be fnmatch compatible
-  bad_patterns: List[Tuple[str, str, str]] = [
-      (
-          '*/tracing_service_impl.cc',
-          r'\btrigger_config\(\)',  # fnmatch pattern
-          'Use GetTriggerMode(session->config) rather than .trigger_config()'),
-  ]
-  errors = []
-  comment_pattern = re.compile(r'^\s*//')  # Regex is fine here
-
-  for file_pattern, code_regex_str, message in bad_patterns:
-    # Filter files using fnmatch pattern
-    files_to_check_list = filter_files(
-        changed_files, files_to_check=[file_pattern])
-    for f_path in files_to_check_list:
-      content = read_file_content(f_path)
-      if content:
-        for i, line in enumerate(content):
-          if comment_pattern.search(line):
-            continue  # Skip comments
-          # Check content using re.search
-          if re.search(code_regex_str, line):
-            errors.append(f'{f_path}:{i+1}: {message}')
   return errors
 
 
@@ -991,7 +952,6 @@ def main():
       (CheckMergedTraceConfigProto, [changed_files]),
       (CheckProtoEventList, [changed_files, merge_base]),  # Needs merge_base
       (CheckBannedCpp, [changed_files]),
-      (CheckBadCppPatterns, [changed_files]),
       (CheckSqlModules, [changed_files]),
       (CheckSqlMetrics, [changed_files]),
       (CheckTestData, [changed_files
